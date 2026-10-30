@@ -27,6 +27,8 @@ Vagrant.configure("2") do |config|
     server.vm.hostname = "afaugeroS"
     server.vm.network "private_network", ip: "192.168.56.110"
 
+    server.vm.synced_folder ".", "/vagrant", disabled: true
+
     server.vm.provider "libvirt" do |libvirt|
       libvirt_default_prefix = ""
       libvirt.memory = 1024
@@ -40,6 +42,8 @@ Vagrant.configure("2") do |config|
   config.vm.define "afaugeroSW" do |worker|
     worker.vm.hostname = "afaugeroSW"
     worker.vm.network "private_network", ip: "192.168.56.111"
+
+    worker.vm.synced_folder ".", "/vagrant", disabled: true
 
     worker.vm.provider "libvirt" do |libvirt|
       libvirt_default_prefix = ""
