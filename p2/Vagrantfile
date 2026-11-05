@@ -22,6 +22,15 @@ Vagrant.configure("2") do |config|
       libvirt.cpus = 1
     end
 
-    server.vm.provision "shell", path: "scripts/server.sh", env: ENV_VARS
+
+    server.vm.provision "file",
+      source: "./k8s",
+      destination: "/home/vagrant/k8s"
+
+    server.vm.provision "shell",
+      path: "scripts/server.sh"
+
+    server.vm.provision "shell",
+      path: "scripts/deploy.sh"
   end
 end

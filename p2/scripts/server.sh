@@ -1,7 +1,6 @@
 #!/bin/sh
 
 set -e
-: "${K3S_TOKEN:?Missing K3S_TOKEN, check env file}"
 
 if [ ! -f /swapfile ] ; then
 	dd if=/dev/zero of=/swapfile bs=1M count=1024 #if -> input file, of -> ouptut file, bs -> block size, count -> copie 1024 blocks
@@ -18,7 +17,7 @@ swapon -a
 # Enable swap at boot
 rc-update add swap boot
 
-curl -sfL https://get.k3s.io | sh -s - \
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --write-kubeconfig-mode 644" sh -s - \
   --node-ip 192.168.56.110 \
   --flannel-iface eth1 \
   --disable metrics-server \
