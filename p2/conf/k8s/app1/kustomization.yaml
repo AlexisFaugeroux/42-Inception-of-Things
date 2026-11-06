@@ -1,0 +1,10 @@
+resources:
+  - deployment.yaml
+  - service.yaml
+configMapGenerator:
+  - name: app1-nginx
+    files:
+      - default.conf=../../nginx/nginx.conf
+  - name: app1-html
+    files:
+      - ../../../www/app1/index.html
