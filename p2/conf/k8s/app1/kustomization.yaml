@@ -4,7 +4,7 @@ resources:
 configMapGenerator:
   - name: app1-nginx
     files:
-      - default.conf=../../nginx/nginx.conf
+      - default.conf=../../nginx/app1/nginx.conf
   - name: app1-html
     files:
       - ../../../www/app1/index.html

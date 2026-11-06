@@ -4,4 +4,6 @@ kind: Kustomization
 
 resources:
   - app1/
+  - app2/
+  - app3/
   - ingress.yaml

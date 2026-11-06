@@ -1,0 +1,13 @@
+resources:
+  - deployment.yaml
+  - service.yaml
+configMapGenerator:
+  - name: app3-nginx
+    files:
+      - default.conf=../../nginx/app3/nginx.conf
+  - name: app3-html
+    files:
+      - ../../../www/app3/index.html
+      - ../../../www/app3/iot.html
+      - ../../../www/app3/k8s.html
+      - ../../../www/app3/vstack.html

@@ -17,3 +17,24 @@ spec:
                 name: app1-service
                 port:
                   number: 80
+    # Service app2
+    - host: app2.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app2-service
+                port:
+                  number: 80
+    # Service app3 -> default backend (no host specified)
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app3-service
+                port:
+                  number: 80
