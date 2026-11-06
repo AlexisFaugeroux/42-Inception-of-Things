@@ -30,9 +30,12 @@ spec:
         - name: app1-content
           configMap:
             name: app1-configmap
+            items:
+              - key: index.html
+                path: index.html
         - name: nginx-config
           configMap:
             name: app1-configmap
             items:
               - key: nginx.conf
-                path: nginx.conf
+                path: default.conf

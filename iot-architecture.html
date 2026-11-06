@@ -83,6 +83,8 @@
   .panel .tag { color: var(--ink-2); font-size: 0.9rem; margin: 2px 0 12px; }
   .scroll { overflow-x: auto; }
   .scroll svg { display: block; width: 100%; min-width: 540px; height: auto; }
+  .panel.wide { grid-column: 1 / -1; }
+  .scroll svg.wide { min-width: 900px; }
 
   /* SVG styling */
   svg text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
@@ -136,7 +138,8 @@
     How the three tools of <em>Inception of Things</em> fit together. The subject requires the
     whole project to live inside one <strong>main Linux VM</strong>. Inside it, K3s is the Kubernetes
     in every part of the project. Vagrant and K3d are two different ways to give it machines
-    to run on: nested virtual machines for P1 and P2, Docker containers for P3 and the bonus.
+    to run on: nested virtual machines for P1 (two VMs) and P2 (a single VM), Docker containers
+    for P3 and the bonus.
   </p>
 
   <div class="key">
@@ -165,8 +168,8 @@
   <div class="panels">
     <!-- ============ VAGRANT + K3S ============ -->
     <section class="panel">
-      <h3>Vagrant + K3s</h3>
-      <p class="tag">Parts 1 &amp; 2: nested VMs, K3s installed by your provisioning scripts</p>
+      <h3>Vagrant + K3s · Part 1</h3>
+      <p class="tag">Two nested VMs: K3s server + K3s agent, installed by your provisioning scripts</p>
       <div class="scroll">
       <svg viewBox="0 0 600 670" role="img" aria-label="Inside the main VM on the host, Vagrant drives a hypervisor that creates two nested VMs; one runs the K3s server, the other the K3s agent which joins it over the private network">
         <defs>
@@ -259,8 +262,8 @@
 
     <!-- ============ K3D ============ -->
     <section class="panel">
-      <h3>K3d</h3>
-      <p class="tag">Part 3 &amp; bonus: no nested VMs, each K3s node is a Docker container</p>
+      <h3>K3d · Part 3 &amp; bonus</h3>
+      <p class="tag">No nested VMs: each K3s node is a Docker container</p>
       <div class="scroll">
       <svg viewBox="0 0 600 670" role="img" aria-label="Inside the main VM on the host, K3d creates Docker containers that each run K3s; a load balancer container exposes port 8888; Argo CD syncs the app from GitHub">
         <defs>
@@ -352,6 +355,103 @@
       </svg>
       </div>
     </section>
+
+    <!-- ============ VAGRANT + K3S, PART 2 ============ -->
+    <section class="panel wide">
+      <h3>Vagrant + K3s · Part 2</h3>
+      <p class="tag">One nested VM only: a single K3s server is both control plane and worker, and Traefik routes three apps by hostname</p>
+      <div class="scroll">
+      <svg class="wide" viewBox="0 0 1200 470" role="img" aria-label="Inside the main VM on the host, Vagrant creates a single nested VM running a K3s server with no agent; a curl from the main VM reaches Traefik, which routes app1.com to app-one, app2.com to app-two with three replicas, and any other host to app-three">
+        <defs>
+          <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path class="ahead" d="M0,0 L10,5 L0,10 z"/>
+          </marker>
+        </defs>
+
+        <rect class="host" x="6" y="6" width="1188" height="458" rx="16"/>
+        <text class="s" x="22" y="27">Host machine (any OS) + hypervisor: VirtualBox, VMware, KVM, UTM…</text>
+
+        <rect class="mainvm" x="20" y="38" width="1160" height="414" rx="14"/>
+        <text class="t tm" x="36" y="60">Main VM · Linux (Debian / Ubuntu)</text>
+        <text class="s" x="1164" y="60" text-anchor="end">nested virtualization ON</text>
+
+        <!-- Vagrantfile -> provider -->
+        <rect class="vag" x="40" y="84" width="240" height="56" rx="8"/>
+        <text class="t tv" x="160" y="107" text-anchor="middle">Vagrantfile</text>
+        <text class="s" x="160" y="126" text-anchor="middle">1 machine · IP · RAM · scripts</text>
+
+        <path class="arrow" d="M160 140 V176" marker-end="url(#ah3)"/>
+        <text class="s m" x="168" y="162">vagrant up</text>
+
+        <rect class="vag" x="40" y="180" width="240" height="56" rx="8"/>
+        <text class="t tv" x="160" y="203" text-anchor="middle">VirtualBox / libvirt</text>
+        <text class="s" x="160" y="222" text-anchor="middle">creates the only nested VM</text>
+        <path class="arrow" d="M280 208 H312" marker-end="url(#ah3)"/>
+
+        <!-- curl from the main VM -->
+        <text class="s" x="40" y="322">test from the main VM</text>
+        <rect class="cmd" x="40" y="330" width="240" height="64" rx="8"/>
+        <text class="i m" x="160" y="356" text-anchor="middle">curl -H "Host: app2.com"</text>
+        <text class="i m" x="160" y="376" text-anchor="middle">192.168.56.110</text>
+        <path class="arrow" d="M280 362 H342" marker-end="url(#ah3)"/>
+
+        <!-- Private network -->
+        <rect class="net" x="300" y="84" width="860" height="348" rx="10"/>
+        <text class="s" x="316" y="106">Private network 192.168.56.0/24</text>
+
+        <!-- The single VM -->
+        <rect class="vag" x="316" y="118" width="828" height="298" rx="10"/>
+        <text class="t" x="334" y="142">VM · loginS</text>
+        <text class="s m" x="334" y="160">eth1 192.168.56.110</text>
+        <text class="t tv" x="1128" y="142" text-anchor="end">the only VM in Part 2</text>
+        <text class="s" x="1128" y="160" text-anchor="end">no loginSW, no K3s agent</text>
+
+        <rect class="k3s" x="332" y="172" width="796" height="230" rx="8"/>
+        <text class="t tk" x="346" y="194">K3s server</text>
+        <text class="s" x="346" y="211">control plane + worker: every pod runs here</text>
+
+        <!-- Traefik -->
+        <rect class="item" x="346" y="228" width="180" height="158" rx="6"/>
+        <text class="t" x="360" y="252">Traefik</text>
+        <text class="s" x="360" y="270">Ingress controller</text>
+        <text class="s" x="360" y="350">exposed on <tspan class="m">:80</tspan></text>
+        <text class="s" x="360" y="366">by ServiceLB</text>
+
+        <!-- Host rules -->
+        <path class="arrow" d="M526 254 H636" marker-end="url(#ah3)"/>
+        <text class="s m" x="581" y="246" text-anchor="middle">app1.com</text>
+        <path class="arrow" d="M526 306 H636" marker-end="url(#ah3)"/>
+        <text class="s m" x="581" y="298" text-anchor="middle">app2.com</text>
+        <path class="arrow" d="M526 358 H636" marker-end="url(#ah3)"/>
+        <text class="s" x="581" y="350" text-anchor="middle">any other host</text>
+
+        <!-- app-one -->
+        <rect class="item" x="640" y="232" width="150" height="44" rx="5"/>
+        <text class="i" x="652" y="259">Service <tspan class="m">app-one</tspan></text>
+        <path class="arrow" d="M790 254 H808" marker-end="url(#ah3)"/>
+        <rect class="pod" x="812" y="236" width="90" height="36" rx="5"/>
+        <text class="i" x="857" y="259" text-anchor="middle">pod</text>
+
+        <!-- app-two: 3 replicas -->
+        <rect class="item" x="640" y="284" width="150" height="44" rx="5"/>
+        <text class="i" x="652" y="311">Service <tspan class="m">app-two</tspan></text>
+        <path class="arrow" d="M790 306 H808" marker-end="url(#ah3)"/>
+        <rect class="pod" x="812" y="288" width="90" height="36" rx="5"/>
+        <text class="i" x="857" y="311" text-anchor="middle">replica 1</text>
+        <rect class="pod" x="912" y="288" width="90" height="36" rx="5"/>
+        <text class="i" x="957" y="311" text-anchor="middle">replica 2</text>
+        <rect class="pod" x="1012" y="288" width="90" height="36" rx="5"/>
+        <text class="i" x="1057" y="311" text-anchor="middle">replica 3</text>
+
+        <!-- app-three: default -->
+        <rect class="item" x="640" y="336" width="150" height="44" rx="5"/>
+        <text class="i" x="652" y="363">Service <tspan class="m">app-three</tspan></text>
+        <path class="arrow" d="M790 358 H808" marker-end="url(#ah3)"/>
+        <rect class="pod" x="812" y="340" width="90" height="36" rx="5"/>
+        <text class="i" x="857" y="363" text-anchor="middle">pod</text>
+      </svg>
+      </div>
+    </section>
   </div>
 
   <h2>Layers from the hardware up</h2>
@@ -360,7 +460,7 @@
       <h3>Vagrant + K3s (P1, P2)</h3>
       <div class="layer pod"><span>Pods, Services, Ingress</span><small>your YAML</small></div>
       <div class="layer k3s"><span>K3s server / agent</span><small>installed by script</small></div>
-      <div class="layer vag"><span>Nested Linux VMs</span><small>one per node</small></div>
+      <div class="layer vag"><span>Nested Linux VMs</span><small>2 in P1 · only 1 in P2</small></div>
       <div class="layer vag"><span>VirtualBox / libvirt + Vagrant</span><small>runs in the main VM</small></div>
       <div class="layer main"><span>Main VM · Linux</span><small>nested virtualization ON</small></div>
       <div class="layer"><span>Host hypervisor</span><small>VirtualBox, VMware, KVM, UTM…</small></div>
@@ -384,7 +484,7 @@
     <thead><tr><th>Part</th><th>Machines (inside the main VM)</th><th>Kubernetes</th><th>What you build</th></tr></thead>
     <tbody>
       <tr><td><strong>P1</strong></td><td>Vagrant: 2 nested VMs</td><td>K3s server + K3s agent</td><td>A 2-node cluster on fixed private IPs</td></tr>
-      <tr><td><strong>P2</strong></td><td>Vagrant: 1 nested VM</td><td>K3s server</td><td>3 web apps routed by hostname through Traefik Ingress</td></tr>
+      <tr><td><strong>P2</strong></td><td>Vagrant: 1 nested VM only (no worker)</td><td>K3s server</td><td>3 web apps routed by hostname through Traefik Ingress</td></tr>
       <tr><td><strong>P3</strong></td><td>Docker (no nested VM)</td><td>K3d (K3s in containers)</td><td>Argo CD deploys your app from GitHub; bump <code>v1</code> → <code>v2</code> in Git and it syncs</td></tr>
       <tr><td><strong>Bonus</strong></td><td>Docker (no nested VM)</td><td>K3d</td><td>Same as P3 with a GitLab instance running in the cluster</td></tr>
     </tbody>
