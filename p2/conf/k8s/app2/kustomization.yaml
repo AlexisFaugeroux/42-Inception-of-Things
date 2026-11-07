@@ -8,6 +8,3 @@ configMapGenerator:
   - name: app2-html
     files:
       - ../../../www/app2/index.html
-      - ../../../www/app2/iot.html
-      - ../../../www/app2/k8s.html
-      - ../../../www/app2/vstack.html

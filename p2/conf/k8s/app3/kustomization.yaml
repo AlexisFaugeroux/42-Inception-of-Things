@@ -8,6 +8,3 @@ configMapGenerator:
   - name: app3-html
     files:
       - ../../../www/app3/index.html
-      - ../../../www/app3/iot.html
-      - ../../../www/app3/k8s.html
-      - ../../../www/app3/vstack.html
